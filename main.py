@@ -20,6 +20,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+import webbrowser
 from pathlib import Path
 
 # Project root — works both from source and from PyInstaller bundle.
@@ -130,6 +131,12 @@ def _open_native_window(url: str) -> None:
     webview.start(gui="edgechromium" if sys.platform == "win32" else None)
 
 
+def _open_browser_fallback(url: str) -> None:
+    """Open the dashboard in the default browser as a compatibility fallback."""
+    if not webbrowser.open(url):
+        raise RuntimeError("Could not open the dashboard URL in the default browser.")
+
+
 def main() -> int:
     """Entry point for the Nexus Neuro desktop application."""
     port = _find_free_port()
@@ -139,7 +146,19 @@ def main() -> int:
     try:
         server = _start_streamlit(port)
         _wait_for_server(url)
-        _open_native_window(url)
+        try:
+            _open_native_window(url)
+        except Exception as webview_exc:
+            # Some Windows setups (notably newer Python versions) can fail to load
+            # the pywebview .NET backend. Fallback to browser mode instead of exiting.
+            _show_error(
+                "Desktop window could not be started.\n\n"
+                "Falling back to browser mode.\n\n"
+                f"Details: {webview_exc}"
+            )
+            _open_browser_fallback(url)
+            if server.poll() is None:
+                server.wait()
         return 0
     except Exception as exc:
         _show_error(f"Could not start Nexus Neuro.\n\n{exc}")
