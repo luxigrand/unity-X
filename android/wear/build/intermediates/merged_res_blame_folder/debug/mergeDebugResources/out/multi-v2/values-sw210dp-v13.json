@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.nexusneuro.app.wear-mergeDebugResources-55:/values-sw210dp-v13/values-sw210dp-v13.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\ACER\\.gradle\\caches\\8.9\\transforms\\eee1be67d13c50494de50ce21830677e\\transformed\\wear-1.3.0\\res\\values-sw210dp-v13\\values-sw210dp-v13.xml",
+                    "from": {
+                        "startLines": "2,3,4,5",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "55,126,198,265",
+                        "endColumns": "70,71,66,54",
+                        "endOffsets": "121,193,260,315"
+                    }
+                }
+            ]
+        }
+    ]
+}

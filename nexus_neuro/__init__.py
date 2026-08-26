@@ -1,4 +1,4 @@
-"""Nexus Neuro — REM sleep detection and lucid-dreaming trigger MVP."""
+"""unity-X — REM sleep detection and lucid-dreaming trigger MVP."""
 
 from nexus_neuro.models import (
     ControlMode,

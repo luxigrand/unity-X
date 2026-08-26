@@ -1,9 +1,13 @@
 """
-Personnel login and role-based access control for Nexus Neuro.
+Personnel login and role-based access control for unity-X.
+
+Aligned with Android `:app` (personnel / admin APK).
+End-user accounts live in Supabase (`:consumer` app).
 
 Roles:
-    ADMIN     — Manual mode only (full manual device control)
-    PERSONNEL — Auto and AI Co-Pilot modes only
+    ADMIN      — Manual + Auto + AI Co-Pilot (full device control in Manual)
+    PERSONNEL  — Auto + AI Co-Pilot
+    PRESENTER  — Manual + Auto + AI Co-Pilot (demo / sunum)
 """
 
 from __future__ import annotations
@@ -21,6 +25,7 @@ class UserRole(str, Enum):
 
     ADMIN = "Administrator"
     PERSONNEL = "Personel"
+    PRESENTER = "Sunum"
 
 
 @dataclass(frozen=True)
@@ -36,7 +41,6 @@ def _hash_password(password: str) -> str:
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 
-# Registered users (credentials provided at setup)
 _USERS: dict[str, UserAccount] = {
     "57019027696": UserAccount(
         national_id="57019027696",
@@ -50,16 +54,17 @@ _USERS: dict[str, UserAccount] = {
         role=UserRole.PERSONNEL,
         display_name="Personel",
     ),
+    "159951": UserAccount(
+        national_id="159951",
+        password_hash=_hash_password("1324"),
+        role=UserRole.PRESENTER,
+        display_name="Sunum",
+    ),
 }
 
 
 def authenticate(national_id: str, password: str) -> Optional[UserAccount]:
-    """
-    Validate kimlik numarası + şifre.
-
-    Returns:
-        UserAccount on success, None on failure.
-    """
+    """Validate kimlik numarası + şifre."""
     user = _USERS.get(national_id.strip())
     if user is None:
         return None
@@ -70,18 +75,22 @@ def authenticate(national_id: str, password: str) -> Optional[UserAccount]:
 
 def allowed_modes(role: UserRole) -> list[ControlMode]:
     """Return control modes this role may use."""
-    if role is UserRole.ADMIN:
-        return [ControlMode.MANUAL]
+    if role in (UserRole.ADMIN, UserRole.PRESENTER):
+        return [ControlMode.MANUAL, ControlMode.AUTO, ControlMode.COPILOT]
     return [ControlMode.AUTO, ControlMode.COPILOT]
 
 
 def default_mode(role: UserRole) -> ControlMode:
     """Initial control mode after login."""
-    return allowed_modes(role)[0]
+    if role is UserRole.ADMIN:
+        return ControlMode.MANUAL
+    if role is UserRole.PRESENTER:
+        return ControlMode.COPILOT
+    return ControlMode.AUTO
 
 
 def can_access_manual_controls(role: UserRole) -> bool:
-    return role is UserRole.ADMIN
+    return role in (UserRole.ADMIN, UserRole.PRESENTER)
 
 
 def role_label(role: UserRole) -> str:

@@ -1,5 +1,5 @@
 """
-Nexus Neuro — Desktop Application Launcher.
+unity-X — Desktop Application Launcher.
 
 Starts the Streamlit dashboard in the background and opens it inside a
 native desktop window (no browser tab required).
@@ -8,7 +8,7 @@ Run:
     python main.py
 
 Double-click:
-    Nexus Neuro.bat   (Windows)
+    unity-X.bat   (Windows)
 """
 
 from __future__ import annotations
@@ -32,7 +32,7 @@ else:
     EXE_DIR = APP_DIR
 
 APP_FILE = APP_DIR / "app.py"
-WINDOW_TITLE = "Nexus Neuro"
+WINDOW_TITLE = "unity-X"
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 820
 STARTUP_TIMEOUT_SEC = 45
@@ -138,7 +138,7 @@ def _open_browser_fallback(url: str) -> None:
 
 
 def main() -> int:
-    """Entry point for the Nexus Neuro desktop application."""
+    """Entry point for the unity-X desktop application."""
     port = _find_free_port()
     url = f"http://127.0.0.1:{port}"
     server: subprocess.Popen[str] | None = None
@@ -161,7 +161,7 @@ def main() -> int:
                 server.wait()
         return 0
     except Exception as exc:
-        _show_error(f"Could not start Nexus Neuro.\n\n{exc}")
+        _show_error(f"Could not start unity-X.\n\n{exc}")
         return 1
     finally:
         if server is not None and server.poll() is None:

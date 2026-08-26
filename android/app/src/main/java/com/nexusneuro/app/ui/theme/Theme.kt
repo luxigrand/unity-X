@@ -33,7 +33,7 @@ val MonoStyle = TextStyle(
 )
 
 @Composable
-fun NexusNeuroTheme(content: @Composable () -> Unit) {
+fun UnityXTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = NexusColors,
         typography = MaterialTheme.typography.copy(

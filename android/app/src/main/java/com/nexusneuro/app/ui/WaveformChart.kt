@@ -16,23 +16,25 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nexusneuro.app.domain.ChartPoint
-import com.nexusneuro.app.ui.theme.NexusPalette
 import com.nexusneuro.app.ui.theme.MonoStyle
+import com.nexusneuro.app.ui.theme.NexusPalette
 
 @Composable
 fun WaveformChart(
     title: String,
     points: List<ChartPoint>,
     modifier: Modifier = Modifier,
+    chartHeight: Dp = 180.dp,
     emptyLabel: String = "Bekleniyor…",
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(180.dp)
+            .height(chartHeight)
             .border(1.dp, NexusPalette.White)
             .background(NexusPalette.Black)
             .padding(8.dp),
@@ -68,7 +70,6 @@ fun WaveformChart(
                     color = NexusPalette.White,
                     style = Stroke(width = 2f, cap = StrokeCap.Round),
                 )
-                // baseline grid
                 drawLine(
                     color = NexusPalette.Dim,
                     start = Offset(0f, size.height / 2f),

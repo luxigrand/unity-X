@@ -1,5 +1,5 @@
 """
-Nexus Neuro — Phase 1 MVP Dashboard.
+unity-X — Phase 1 MVP Dashboard.
 
 Run as desktop app:  python main.py
 Run in browser:      python -m streamlit run app.py
@@ -22,6 +22,8 @@ from nexus_neuro.auth import (
     can_access_manual_controls,
     default_mode,
 )
+from nexus_neuro.cloud_vitals import config_status as cloud_config_status
+from nexus_neuro.cloud_vitals import fetch_latest_vitals
 from nexus_neuro.config import (
     CHART_SECONDS,
     SAMPLE_RATE,
@@ -41,7 +43,7 @@ from nexus_neuro.serial_trigger import SerialTrigger
 from nexus_neuro.signal_analyzer import REMSleepDetector
 
 st.set_page_config(
-    page_title="Nexus Neuro",
+    page_title="unity-X",
     page_icon="◉",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -172,7 +174,7 @@ def _init_session_state() -> None:
         "copilot_enabled": True,
         "stim_active": False,
         "copilot_messages": [],
-        "voice_message": "Nexus Neuro hazır.",
+        "voice_message": "unity-X hazır.",
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -185,7 +187,7 @@ _init_session_state()
 def _render_login() -> None:
     """Personnel login screen — blocks dashboard until authenticated."""
     st.markdown(
-        '<div class="login-box"><div class="login-title">NEXUS NEURO</div></div>',
+        '<div class="login-box"><div class="login-title">UNITY-X</div></div>',
         unsafe_allow_html=True,
     )
     st.markdown("### Personel Girişi")
@@ -210,7 +212,10 @@ def _render_login() -> None:
             else:
                 st.error("Kimlik numarası veya şifre hatalı.")
 
-        st.caption("Administrator → Manuel mod · Personel → Auto / AI Co-Pilot")
+        st.caption(
+            "Administrator / Sunum → Manual+Auto+Co-Pilot · Personel → Auto/Co-Pilot\n"
+            "Son kullanıcı (e-posta) → Android consumer uygulaması"
+        )
 
 
 def _logout() -> None:
@@ -229,7 +234,7 @@ def _enforce_role_mode() -> None:
     permitted = allowed_modes(role)
     if st.session_state.control_mode not in permitted:
         st.session_state.control_mode = default_mode(role)
-    st.session_state.copilot_enabled = st.session_state.control_mode is ControlMode.COPILOT
+    st.session_state.copilot_enabled = True
 
 
 if not st.session_state.authenticated:
@@ -267,7 +272,7 @@ def _build_line_chart(times, samples, ytitle, height=320):
 
 def _status_label(stage: SleepStage, stim_active: bool) -> str:
     if stim_active and stage is SleepStage.REM:
-        return "Status: REM — 40Hz Aktif"
+        return "Status: REM — Lucid 40Hz Aktif"
     if stage is SleepStage.REM:
         return "Status: REM Detected — Triggering 40Hz!"
     return f"Status: {stage.value}"
@@ -330,7 +335,7 @@ def _do_wake_up() -> bool:
 # Sidebar
 # ---------------------------------------------------------------------------
 with st.sidebar:
-    st.markdown("## NEXUS NEURO")
+    st.markdown("## UNITY-X")
     st.caption(f"{st.session_state.user_name} · {st.session_state.user_role.value}")
     if st.button("Çıkış", use_container_width=True):
         _logout()
@@ -348,12 +353,37 @@ with st.sidebar:
         label_visibility="collapsed",
     )
     st.session_state.control_mode = ControlMode(mode_label)
-    st.session_state.copilot_enabled = st.session_state.control_mode is ControlMode.COPILOT
+    # Show AI panel cues in Co-Pilot and Manual (admin rem/lucid), like Android.
+    st.session_state.copilot_enabled = st.session_state.control_mode in (
+        ControlMode.COPILOT,
+        ControlMode.MANUAL,
+        ControlMode.AUTO,
+    )
 
     if role is UserRole.ADMIN:
-        st.caption("Manuel mod — tam cihaz kontrolü")
+        st.caption("Admin — Manual / Auto / AI Co-Pilot")
+    elif role is UserRole.PRESENTER:
+        st.caption("Sunum — tüm modlar")
     else:
-        st.caption("Auto / AI Co-Pilot erişimi")
+        st.caption("Personel — Auto / AI Co-Pilot")
+
+    st.markdown("---")
+    st.markdown("**Mobil kullanıcı nabız (Supabase)**")
+    st.caption(cloud_config_status())
+    if st.button("Buluttan yenile", use_container_width=True):
+        st.session_state["_cloud_vitals_cache"] = fetch_latest_vitals()
+    cloud_rows = st.session_state.get("_cloud_vitals_cache")
+    if cloud_rows is None:
+        st.session_state["_cloud_vitals_cache"] = fetch_latest_vitals()
+        cloud_rows = st.session_state["_cloud_vitals_cache"]
+    if cloud_rows:
+        for cv in cloud_rows[:3]:
+            bpm_txt = f"{cv.bpm:.0f}" if cv.bpm is not None else "—"
+            spo2_txt = f" · SpO₂ {cv.spo2:.0f}%" if cv.spo2 is not None else ""
+            st.markdown(f"**{bpm_txt} BPM**{spo2_txt}")
+            st.caption(f"{cv.availability} · {cv.measured_at or '—'}")
+    else:
+        st.caption("Kayıt yok veya RLS (anon) okuyamıyor. Consumer uygulaması ölçüm yapsın.")
 
     st.markdown("---")
     st.markdown("**Serial / Arduino**")
@@ -378,7 +408,7 @@ with st.sidebar:
 
     st.markdown("---")
 
-    if can_access_manual_controls(role):
+    if can_access_manual_controls(role) and st.session_state.control_mode is ControlMode.MANUAL:
         st.markdown("**Manuel Kontroller**")
 
         stage_names = [s.value for s in SleepStage]
@@ -390,7 +420,7 @@ with st.sidebar:
         with mc1:
             if st.button("40Hz Tetikle", use_container_width=True):
                 if _do_trigger_40hz():
-                    st.success("40Hz gönderildi")
+                    st.success("40Hz · Lucid protokolü")
                 else:
                     st.warning("Cihaz bağlı değil veya hata.")
         with mc2:
@@ -423,7 +453,7 @@ with st.sidebar:
     vc1, vc2 = st.columns(2)
     with vc1:
         if st.button("Ses Test", use_container_width=True):
-            _speak_local("Nexus Neuro ses testi.")
+            _speak_local("unity-X ses testi.")
     with vc2:
         if st.button("Cihaza Ses", use_container_width=True):
             trigger = st.session_state.serial_trigger
@@ -465,7 +495,7 @@ serial_msg = st.session_state.serial_trigger.status_message(st.session_state.sel
 # ---------------------------------------------------------------------------
 # Main dashboard
 # ---------------------------------------------------------------------------
-st.markdown("# NEXUS NEURO")
+st.markdown("# UNITY-X")
 st.markdown(
     f"*Kullanıcı: {st.session_state.user_name} · Mod: {st.session_state.control_mode.value} · REM · Nabız · Ses*"
 )

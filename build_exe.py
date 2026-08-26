@@ -1,5 +1,5 @@
 """
-Build Nexus Neuro as a standalone Windows .exe (optional).
+Build unity-X as a standalone Windows .exe (optional).
 
 Usage:
     pip install pyinstaller
@@ -37,7 +37,7 @@ def main() -> None:
         "--onefile",
         "--windowed",
         "--name",
-        "Nexus Neuro",
+        "unity-X",
         "--add-data",
         f"{ROOT / 'app.py'};.",
         "--add-data",
@@ -59,9 +59,9 @@ def main() -> None:
         str(ROOT / "main.py"),
     ]
 
-    print("Building Nexus Neuro.exe …")
+    print("Building unity-X.exe …")
     subprocess.check_call(cmd, cwd=str(ROOT))
-    exe_path = DIST_DIR / "Nexus Neuro.exe"
+    exe_path = DIST_DIR / "unity-X.exe"
     print(f"\nDone: {exe_path}")
     print("Copy the .exe anywhere and double-click to run.")
 

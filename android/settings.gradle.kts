@@ -14,5 +14,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "NexusNeuro"
+rootProject.name = "unity-X"
 include(":app")
+include(":wear")
+include(":consumer")

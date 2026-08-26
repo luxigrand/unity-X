@@ -1,5 +1,5 @@
 """
-Rule-based AI Co-Pilot for Nexus Neuro.
+Rule-based AI Co-Pilot for unity-X.
 
 Monitors EEG stage, pulse, serial link, and control mode — then produces
 actionable Turkish/English advisory messages. No external API required.
@@ -18,7 +18,7 @@ class AICopilot:
     Lightweight co-pilot that guides the user through sleep sessions.
 
     In Co-Pilot mode it can recommend manual actions; in Auto mode it
-    narrates what the system is doing.
+    narrates what the system is doing. Manual also surfaces REM / Lucid cues.
     """
 
     MAX_MESSAGES = 8
@@ -49,17 +49,15 @@ class AICopilot:
         confidence: float,
         is_rem_edge: bool,
     ) -> list[CopilotMessage]:
-        """
-        Evaluate session state and append new co-pilot messages if needed.
-        """
-        if mode is not ControlMode.COPILOT and mode is not ControlMode.AUTO:
+        """Evaluate session state and append new co-pilot messages if needed."""
+        if mode not in (ControlMode.COPILOT, ControlMode.AUTO, ControlMode.MANUAL):
             return self.get_messages()
 
         now = time.monotonic()
 
-        if not serial_connected:
+        if mode is not ControlMode.MANUAL and not serial_connected:
             self._push(
-                "Arduino bağlı değil. Manuel tetikleme cihaza ulaşmayacak.",
+                "Arduino bağlı değil. Stimülasyon yerel / komut kuyruğunda izlenir.",
                 "warn",
                 now,
             )
@@ -70,9 +68,9 @@ class AICopilot:
                 "info",
                 now,
             )
-            if stage is SleepStage.REM and mode is ControlMode.COPILOT:
+            if stage is SleepStage.REM and mode in (ControlMode.COPILOT, ControlMode.MANUAL):
                 self._push(
-                    "REM tespit edildi. 40 Hz tetiklemesi öneriliyor.",
+                    "REM tespit edildi. Lucid dreaming için 40 Hz öneriliyor.",
                     "action",
                     now,
                 )
@@ -83,16 +81,29 @@ class AICopilot:
                     now,
                 )
 
-        if is_rem_edge and auto_trigger_enabled and serial_connected:
+        if is_rem_edge and auto_trigger_enabled and mode is not ControlMode.MANUAL:
+            if serial_connected:
+                self._push(
+                    "40 Hz sinyali cihaza gönderildi. Lucid dreaming protokolü aktif.",
+                    "action",
+                    now,
+                )
+            else:
+                self._push(
+                    "40 Hz yerel tetiklendi. Lucid dreaming protokolü aktif.",
+                    "action",
+                    now,
+                )
+        elif is_rem_edge and mode is not ControlMode.MANUAL and not auto_trigger_enabled:
             self._push(
-                "40 Hz sinyali cihaza gönderildi. Lucid dreaming protokolü aktif.",
-                "action",
+                "REM tespit edildi — otomatik tetikleme kapalı.",
+                "warn",
                 now,
             )
-        elif is_rem_edge and not serial_connected:
+        elif stim_active and stage is SleepStage.REM and mode is ControlMode.MANUAL:
             self._push(
-                "REM tespit edildi ama cihaz bağlı değil — '40Hz Tetikle' kullanın.",
-                "warn",
+                "Manuel 40 Hz aktif. Lucid dreaming protokolü çalışıyor.",
+                "action",
                 now,
             )
 
@@ -112,7 +123,7 @@ class AICopilot:
 
         if mode is ControlMode.COPILOT and not device_voice_enabled:
             self._push(
-                "Cihaz sesi kapalı. Sesli geri bildirim için 'Cihaz Sesi Aç' kullanın.",
+                "Kişiye ses kapalı. Sesli bildirim için 'Cihaz Sesi' açın.",
                 "info",
                 now,
             )
@@ -130,12 +141,12 @@ class AICopilot:
 
     def suggest_wake_message(self, bpm: float) -> str:
         return (
-            f"Günaydın. Nabzınız {bpm:.0f}. "
-            "Yavaşça uyanın. Nexus Neuro uyandırma protokolü tamamlandı."
+            f"Günaydın. Nabzınız {bpm:.0f}. Yavaşça uyanın. "
+            "unity-X uyandırma protokolü tamamlandı."
         )
 
     def suggest_rem_message(self) -> str:
-        return "REM uykusu tespit edildi. Kırık hafif rüya protokolü başlatılıyor."
+        return "REM uykusu tespit edildi. Lucid rüya protokolü başlatılıyor."
 
     def _push(self, text: str, priority: str, timestamp: float) -> None:
         if self._messages and self._messages[-1].text == text:

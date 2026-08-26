@@ -1,4 +1,4 @@
-"""Data models and enums used across the Nexus Neuro application."""
+"""Data models and enums used across the unity-X application."""
 
 from __future__ import annotations
 

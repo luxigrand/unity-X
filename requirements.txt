@@ -4,3 +4,4 @@ pyserial>=3.5
 plotly>=5.18.0
 pywebview>=5.0.0
 pyttsx3>=2.90
+supabase>=2.4.0

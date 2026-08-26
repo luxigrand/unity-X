@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.nexusneuro.app.wear-release-53:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.nexusneuro.app.wear-main-54:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.nexusneuro.app.wear-release-53:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.nexusneuro.app.wear-main-54:/drawable/ic_launcher_foreground.xml"
+    }
+]

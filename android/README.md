@@ -1,42 +1,72 @@
-# Nexus Neuro Android
+# unity-X Android
 
-Kotlin + Jetpack Compose APK for the Nexus Neuro Phase 1 MVP (mock EEG / pulse, REM detection, local stim stub).
+Üç uygulama:
 
-## Build APK
+| Modül | applicationId | Kim |
+| --- | --- | --- |
+| `:consumer` | `com.nexusneuro.consumer` | Son kullanıcı (e-posta + Supabase) |
+| `:wear` | `com.nexusneuro.consumer` | Saat (consumer ile Data Layer) |
+| `:app` | `com.nexusneuro.app` | Personel / Administrator (yerel giriş) |
+
+## Gereksinimler
+
+`android/local.properties` içinde (SDK satırına ek):
+
+```properties
+SUPABASE_URL=https://mpnrtyzxfeeqbzdrfnti.supabase.co
+SUPABASE_ANON_KEY=<anon_key>
+```
+
+Geliştirmede e-posta onayı kapalı olsun: Supabase Dashboard → Authentication → Providers → Email → **Confirm email** off.
+
+### Doğrulama linki localhost:3000 açıyorsa
+
+Supabase varsayılan Site URL `http://localhost:3000`. Android için değiştir:
+
+1. [URL Configuration](https://supabase.com/dashboard/project/mpnrtyzxfeeqbzdrfnti/auth/url-configuration)
+2. **Site URL:** `com.nexusneuro.consumer://login-callback`
+3. **Redirect URLs** listesine ekle: `com.nexusneuro.consumer://login-callback`
+4. Kaydet; yeni kayıt maili artık uygulamayı açar (consumer APK kurulu olmalı).
+
+En kolayı geliştirmede: Email → **Confirm email** kapat → mail linkine gerek kalmaz.
+
+## Son kullanıcı (önerilen)
 
 ```bash
 cd android
-.\gradlew.bat assembleRelease
+.\gradlew.bat :consumer:assembleDebug
+.\gradlew.bat :wear:assembleDebug
 ```
 
-Debug APK (easier sideload, debug-signed):
+| APK | Yol |
+| --- | --- |
+| Consumer | `consumer/build/outputs/apk/debug/consumer-debug.apk` |
+| Wear | `wear/build/outputs/apk/debug/wear-debug.apk` |
+
+1. Telefona **consumer** kur; saate **wear** kur.
+2. Telefonda e-posta ile kayıt / giriş.
+3. İlk cihaz otomatik **ana cihaz** olur → saatte **BAŞLAT**.
+4. İkinci telefonda aynı hesap: buluttan nabız görür; **BU CİHAZI ANA YAP** (eski ana 2 dk sessizse veya orada çıkış).
+
+## Personel / Admin
 
 ```bash
-.\gradlew.bat assembleDebug
+.\gradlew.bat :app:assembleDebug
 ```
 
-## Output paths
+| Role | Kimlik | Şifre | Ekran |
+| --- | --- | --- | --- |
+| Administrator | `57019027696` | `15041212.k` | Tam EEG / REM dashboard |
+| Personel / Sunum | `5433307329` / `159951` | ilgili şifre | Personel bilgi ekranı (son kullanıcı → consumer) |
 
-| Build | APK |
-|-------|-----|
-| Release | `android/app/build/outputs/apk/release/app-release.apk` (debug-keystore signed for sideload) |
-| Debug | `android/app/build/outputs/apk/debug/app-debug.apk` |
+## Wear notları
 
-## Install on phone
+- Nabız: Health Services `MeasureClient`.
+- SpO₂: `PassiveMonitoringClient` — saatte yoksa **“SpO₂ bu saatte yok”** (yanlış ölçüm yok).
+- Saat ↔ telefon yalnız **consumer** `applicationId` ile eşleşir.
 
-1. Copy the APK to the device.
-2. Enable **Install unknown apps** for your file manager.
-3. Open the APK and install.
-4. Launch **Nexus Neuro**.
+## Notlar
 
-## Login (same as desktop)
-
-| Role | Kimlik | Şifre |
-|------|--------|-------|
-| Administrator (Manual) | `57019027696` | `15041212.k` |
-| Personel (Auto / Co-Pilot) | `5433307329` | `1599511324` |
-
-## Notes
-
-- USB Arduino serial and TTS are stubs in v1 (stim state is local).
-- `local.properties` points at the machine Android SDK; regenerate if you move machines.
+- Ana cihaz heartbeat 30 sn (`touch_device`); stale claim 2 dk.
+- Anon key yalnız `local.properties` / BuildConfig; git’e koyma.
+- USB Arduino stim hâlâ stub (`:app`).

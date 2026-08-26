@@ -5,6 +5,7 @@ import java.security.MessageDigest
 enum class UserRole(val label: String) {
     ADMIN("Administrator"),
     PERSONNEL("Personel"),
+    PRESENTER("Sunum"),
 }
 
 data class UserAccount(
@@ -34,6 +35,12 @@ object Auth {
             role = UserRole.PERSONNEL,
             displayName = "Personel",
         ),
+        "159951" to UserAccount(
+            nationalId = "159951",
+            passwordHash = hashPassword("1324"),
+            role = UserRole.PRESENTER,
+            displayName = "Sunum",
+        ),
     )
 
     fun authenticate(nationalId: String, password: String): UserAccount? {
@@ -42,11 +49,24 @@ object Auth {
         return user
     }
 
+    fun findByNationalId(nationalId: String): UserAccount? =
+        users[nationalId.trim()]
+
     fun allowedModes(role: UserRole): List<ControlMode> =
-        if (role == UserRole.ADMIN) listOf(ControlMode.MANUAL)
-        else listOf(ControlMode.AUTO, ControlMode.COPILOT)
+        when (role) {
+            UserRole.ADMIN,
+            UserRole.PRESENTER,
+            -> listOf(ControlMode.MANUAL, ControlMode.AUTO, ControlMode.COPILOT)
+            UserRole.PERSONNEL -> listOf(ControlMode.AUTO, ControlMode.COPILOT)
+        }
 
-    fun defaultMode(role: UserRole): ControlMode = allowedModes(role).first()
+    fun defaultMode(role: UserRole): ControlMode =
+        when (role) {
+            UserRole.ADMIN -> ControlMode.MANUAL
+            UserRole.PRESENTER -> ControlMode.COPILOT
+            UserRole.PERSONNEL -> ControlMode.AUTO
+        }
 
-    fun canAccessManualControls(role: UserRole): Boolean = role == UserRole.ADMIN
+    fun canAccessManualControls(role: UserRole): Boolean =
+        role == UserRole.ADMIN || role == UserRole.PRESENTER
 }

@@ -1,4 +1,4 @@
-"""Shared configuration constants for the Nexus Neuro MVP."""
+"""Shared configuration constants for the unity-X MVP."""
 
 # --- Signal acquisition -------------------------------------------------------
 SAMPLE_RATE: int = 256          # Hz — typical EEG sampling rate

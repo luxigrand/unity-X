@@ -1,5 +1,5 @@
 """
-Mock EEG data generator for Nexus Neuro MVP.
+Mock EEG data generator for unity-X MVP.
 
 Simulates real-time brainwave streams by cycling through Awake, Deep Sleep,
 and REM stages with random realistic durations. Each stage produces

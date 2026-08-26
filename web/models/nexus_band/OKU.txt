@@ -1,0 +1,32 @@
+Nexus Neuro — Fusion'da aç
+=========================
+
+SENİN DOSYAN (hepsini birden):
+  web/models/nexus_band/NexusNeuro_Headband.step
+
+Fusion:
+  File > Open > NexusNeuro_Headband.step
+  Units: Millimeter
+
+Browser'da ayrı body'ler gelir:
+  01_BandSpine        — C şeklinde yapısal omurga (kumaş kılıf bunun üstüne)
+  02_SensorPod_Base   — alın modülü alt gövde (PCB boşluğu, M2 boss, kablo slot)
+  03_SensorPod_Lid    — üst kapak (LED penceresi)
+  04 / 05 TemplePad   — sol / sağ şakak yastığı
+  06_RearClasp_Base   — arka batarya/klips (USB-C açıklığı, kayış slot)
+  07_RearClasp_Lid    — arka kapak
+
+Tek tek baskı için STL:
+  web/models/nexus_band/02_SensorPod_Base.stl  vb.
+
+Önizleme (tek parça birleşik):
+  web/models/nexus_band/00_Preview_Combined.stl
+
+Tasarımı yeniden üret:
+  python web/models/design_nexus_band.py
+
+Ölçüleri değiştirmek için design_nexus_band.py üstündeki
+HEAD_R, POD_W, WALL… parametrelerini edit et, tekrar çalıştır.
+
+Fusion Assistant'a gerek yok — model burada hazır.
+İnce ayar (fillet, joint, drawing) Fusion'da sen yaparsın.

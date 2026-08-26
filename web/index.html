@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="unity-X — rüyanızda istediğiniz şeyi görmenizi sağlar. Gece boyunca sessizce çalışır, doğru anı bekler, sabah sade bir özet verir." />
+  <title>unity-X — Rüyanızda istediğinizi görün</title>
+  <style>
+    :root {
+      --bg: #e6e9ef;
+      --text: #3a4150;
+      --muted: #6b7385;
+      --accent: #6c7ae0;
+      --accent-soft: rgba(108, 122, 224, 0.14);
+      --shadow-dark: #c5c9d0;
+      --shadow-light: #ffffff;
+      --radius: 24px;
+      --radius-sm: 16px;
+      --nav-h: 72px;
+      --max: 1080px;
+      --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    [data-theme="dark"] {
+      --bg: #2b2f36;
+      --text: #e2e6ef;
+      --muted: #a0a8b8;
+      --accent: #8b97f0;
+      --accent-soft: rgba(139, 151, 240, 0.18);
+      --shadow-dark: #22262b;
+      --shadow-light: #343a42;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      transition: background 0.35s ease, color 0.35s ease;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img, svg { display: block; max-width: 100%; }
+
+    .wrap {
+      width: min(100% - 2rem, var(--max));
+      margin-inline: auto;
+    }
+
+    /* Neumorphic primitives */
+    .neu {
+      background: var(--bg);
+      border-radius: var(--radius);
+      box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+      border: none;
+      transition: box-shadow 0.25s ease, transform 0.25s ease;
+    }
+
+    .neu-inset {
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      box-shadow: inset 4px 4px 10px var(--shadow-dark), inset -4px -4px 10px var(--shadow-light);
+    }
+
+    .neu-press:active {
+      box-shadow: inset 4px 4px 10px var(--shadow-dark), inset -4px -4px 10px var(--shadow-light);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.5rem;
+      font: inherit;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text);
+      cursor: pointer;
+      border-radius: 999px;
+      background: var(--bg);
+      box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+      border: none;
+      transition: box-shadow 0.2s ease, color 0.2s ease;
+    }
+
+    .btn:hover { color: var(--accent); }
+    .btn:active {
+      box-shadow: inset 4px 4px 10px var(--shadow-dark), inset -4px -4px 10px var(--shadow-light);
+    }
+
+    .btn-accent {
+      color: #fff;
+      background: linear-gradient(145deg, #7a87e8, #5d6bd4);
+      box-shadow: 6px 6px 14px var(--shadow-dark), -4px -4px 10px var(--shadow-light);
+    }
+
+    .btn-accent:hover { color: #fff; filter: brightness(1.05); }
+    .btn-accent:active {
+      box-shadow: inset 3px 3px 8px rgba(0,0,0,0.25);
+      filter: none;
+    }
+
+    [data-theme="dark"] .btn-accent {
+      background: linear-gradient(145deg, #8b97f0, #6c7ae0);
+    }
+
+    /* Nav */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(10px);
+      padding: 0.85rem 0;
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+      color: var(--accent);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      list-style: none;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav-links a {
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent);
+      box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+    }
+
+    .theme-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      color: var(--muted);
+    }
+
+    .theme-btn svg { width: 18px; height: 18px; }
+    .theme-btn .icon-moon { display: none; }
+    [data-theme="dark"] .theme-btn .icon-sun { display: none; }
+    [data-theme="dark"] .theme-btn .icon-moon { display: block; }
+
+    /* Sections */
+    section { padding: 4.5rem 0; }
+
+    .section-head {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      max-width: 36rem;
+      margin-inline: auto;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-soft);
+      margin-bottom: 0.85rem;
+      box-shadow: inset 2px 2px 5px color-mix(in srgb, var(--shadow-dark) 40%, transparent),
+                  inset -2px -2px 5px color-mix(in srgb, var(--shadow-light) 40%, transparent);
+    }
+
+    h1, h2, h3 { line-height: 1.2; letter-spacing: -0.02em; }
+
+    h1 { font-size: clamp(1.9rem, 4.5vw, 2.85rem); margin-bottom: 1rem; }
+    h2 { font-size: clamp(1.5rem, 3vw, 2rem); margin-bottom: 0.65rem; }
+    h3 { font-size: 1.1rem; margin-bottom: 0.4rem; }
+
+    .lead { color: var(--muted); font-size: 1.05rem; }
+
+    .hl { color: var(--accent); }
+
+    .hl-block {
+      display: inline;
+      background: var(--accent-soft);
+      border-radius: 10px;
+      padding: 0.05em 0.3em;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+
+    /* Claim banner */
+    .claim {
+      margin: 0 0 2.5rem;
+      padding: 2rem 1.75rem;
+      text-align: center;
+      border-radius: var(--radius);
+    }
+
+    .claim-title {
+      font-size: clamp(1.25rem, 3.6vw, 2.1rem);
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      line-height: 1.25;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    .claim-sub {
+      margin-top: 0.85rem;
+      color: var(--muted);
+      font-size: 0.98rem;
+      max-width: 40rem;
+      margin-inline: auto;
+    }
+
+    .claim-chips {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-top: 1.35rem;
+    }
+
+    .chip {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      box-shadow: inset 3px 3px 7px var(--shadow-dark), inset -3px -3px 7px var(--shadow-light);
+    }
+
+    /* Hero */
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 2.5rem;
+      align-items: center;
+      padding-top: 2.5rem;
+      padding-bottom: 3.5rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      margin-top: 1.75rem;
+    }
+
+    .hero-note {
+      margin-top: 1.25rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .hero-visual {
+      padding: 1.25rem 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .viewer-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      max-height: 360px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      box-shadow: inset 4px 4px 10px var(--shadow-dark), inset -4px -4px 10px var(--shadow-light);
+      background: radial-gradient(ellipse at 50% 40%, var(--accent-soft), transparent 65%);
+    }
+
+    #bandViewer {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    #bandViewer:active { cursor: grabbing; }
+
+    .viewer-hint {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0.65rem;
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--muted);
+      pointer-events: none;
+      letter-spacing: 0.02em;
+    }
+
+    .viewer-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .viewer-actions .btn {
+      padding: 0.55rem 1rem;
+      font-size: 0.82rem;
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+      width: 100%;
+    }
+
+    .stat {
+      padding: 1rem;
+      text-align: center;
+      border-radius: var(--radius-sm);
+      box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.35rem;
+      color: var(--accent);
+    }
+
+    .stat span { font-size: 0.78rem; color: var(--muted); }
+
+    /* Cards */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.35rem;
+    }
+
+    .card {
+      padding: 1.6rem 1.5rem;
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 1rem;
+      color: var(--accent);
+      box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+    }
+
+    .card p { color: var(--muted); font-size: 0.95rem; }
+
+    /* Steps */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      counter-reset: step;
+    }
+
+    .step {
+      padding: 1.5rem;
+      position: relative;
+    }
+
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+    }
+
+    .step p { color: var(--muted); font-size: 0.92rem; }
+
+    .patent-note {
+      margin-top: 1.75rem;
+      padding: 1rem 1.25rem;
+      text-align: center;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    /* Materials */
+    .materials {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    .material {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.15rem 1.25rem;
+      border-radius: var(--radius-sm);
+      box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+    }
+
+    .material h3 { font-size: 0.98rem; margin-bottom: 0.2rem; }
+    .material p { font-size: 0.82rem; color: var(--muted); }
+
+    .cost {
+      flex-shrink: 0;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--accent);
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+    }
+
+    .materials-total {
+      margin-top: 1.5rem;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .materials-total strong { font-size: 1.2rem; color: var(--accent); }
+
+    /* Pricing */
+    .pricing {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.35rem;
+      align-items: stretch;
+    }
+
+    .price-card {
+      padding: 1.75rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .price-card.featured {
+      box-shadow: 12px 12px 24px var(--shadow-dark), -12px -12px 24px var(--shadow-light);
+      transform: translateY(-4px);
+    }
+
+    .badge {
+      position: absolute;
+      top: -0.7rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #fff;
+      background: var(--accent);
+      padding: 0.3rem 0.85rem;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .price {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 0.75rem 0 0.25rem;
+    }
+
+    .price small {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .price-note {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 1.15rem;
+    }
+
+    .features {
+      list-style: none;
+      flex: 1;
+      margin-bottom: 1.35rem;
+    }
+
+    .features li {
+      padding: 0.45rem 0;
+      font-size: 0.92rem;
+      color: var(--muted);
+      display: flex;
+      gap: 0.55rem;
+      align-items: flex-start;
+    }
+
+    .features li::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      margin-top: 0.45rem;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--accent);
+      box-shadow: 2px 2px 4px var(--shadow-dark);
+    }
+
+    .breakdown {
+      font-size: 0.78rem;
+      color: var(--muted);
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    /* FAQ */
+    .faq {
+      max-width: 720px;
+      margin-inline: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    details.neu {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    details summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 1.15rem 1.35rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    details summary::-webkit-details-marker { display: none; }
+
+    details summary::after {
+      content: "+";
+      font-size: 1.25rem;
+      color: var(--accent);
+      font-weight: 400;
+    }
+
+    details[open] summary::after { content: "−"; }
+
+    details[open] {
+      box-shadow: inset 5px 5px 12px var(--shadow-dark), inset -5px -5px 12px var(--shadow-light);
+    }
+
+    details .answer {
+      padding: 0 1.35rem 1.25rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* Footer */
+    footer {
+      padding: 2.5rem 0 3rem;
+      border-top: none;
+    }
+
+    .footer-box {
+      padding: 1.75rem;
+      text-align: center;
+    }
+
+    .footer-box p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
+    .legal {
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      opacity: 0.9;
+    }
+
+    /* Reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal { opacity: 1; transform: none; transition: none; }
+    }
+
+    @media (max-width: 820px) {
+      .hero { grid-template-columns: 1fr; text-align: center; }
+      .hero-actions { justify-content: center; }
+      .nav-links { display: none; }
+      .price-card.featured { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a href="#top" class="logo" aria-label="unity-X ana sayfa">
+        <span class="logo-mark" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3c-2.5 3.5-6 5.5-6 10a6 6 0 0 0 12 0c0-4.5-3.5-6.5-6-10z"/>
+            <path d="M9 14c1 .8 2 1.2 3 1.2s2-.4 3-1.2"/>
+          </svg>
+        </span>
+        unity-X
+      </a>
+      <nav aria-label="Sayfa bölümleri">
+        <ul class="nav-links">
+          <li><a href="#nedir">Nedir?</a></li>
+          <li><a href="#nasil">Nasıl çalışır?</a></li>
+          <li><a href="#malzemeler">Malzemeler</a></li>
+          <li><a href="#fiyatlar">Fiyatlar</a></li>
+          <li><a href="#sss">SSS</a></li>
+        </ul>
+      </nav>
+      <button type="button" class="btn theme-btn neu-press" id="themeToggle" aria-label="Temayı değiştir" title="Tema">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+    <div class="wrap">
+      <section class="hero reveal">
+        <div>
+          <span class="eyebrow">Rüya teknolojisi</span>
+          <h1><span class="hl-block">Rüyanızda istediğiniz şeyi görmenizi sağlar.</span></h1>
+          <p class="lead">
+            unity-X, gece boyunca sessizce çalışır; doğru anı bekler ve o an geldiğinde
+            rüyanızı yönlendirmenize yardım eder. Sabah, gecenin nasıl geçtiğine dair
+            sade bir özet sizi bekler.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-accent" href="#nasil">Nasıl çalışır?</a>
+            <a class="btn" href="#fiyatlar">Fiyatları gör</a>
+          </div>
+          <p class="hero-note">Tıbbi teşhis ya da tedavi amaçlı bir cihaz değildir.</p>
+        </div>
+
+        <aside class="hero-visual neu">
+          <div class="viewer-wrap" aria-label="unity-X baş bandı 3D modeli">
+            <canvas id="bandViewer" width="640" height="640"></canvas>
+            <p class="viewer-hint">Sürükleyerek çevirin</p>
+          </div>
+          <div class="viewer-actions">
+            <a class="btn" href="models/nexus-neuro-band.stl" download>STL indir</a>
+            <a class="btn" href="models/nexus-neuro-band.obj" download>OBJ indir</a>
+          </div>
+          <div class="stat-row">
+            <div class="stat">
+              <strong>Akşam</strong>
+              <span>rüyanızı seçin</span>
+            </div>
+            <div class="stat">
+              <strong>Sabah</strong>
+              <span>sade özet</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </div>
+
+    <section id="nedir">
+      <div class="wrap">
+        <div class="claim neu reveal">
+          <p class="claim-title">Rüyanızda istediğiniz şeyi görmenizi sağlar</p>
+          <p class="claim-sub">
+            Uyumadan önce ne görmek istediğinizi seçersiniz. Gerisini bant halleder:
+            doğru anı bekler ve o an geldiğinde sizi nazikçe o rüyaya yönlendirir.
+          </p>
+          <div class="claim-chips">
+            <span class="chip">Dilediğiniz sahneyi seçin</span>
+            <span class="chip">Uykunuz bölünmez</span>
+            <span class="chip">Sabah özetini görün</span>
+          </div>
+        </div>
+
+        <div class="section-head reveal">
+          <span class="eyebrow">Bu nedir?</span>
+          <h2>Basit bir gece arkadaşı</h2>
+          <p class="lead">Teknik jargon yok. Üç şey yapar; fazlasını vaat etmez.</p>
+        </div>
+        <div class="grid-3">
+          <article class="card neu reveal">
+            <div class="card-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            </div>
+            <h3>Gece boyunca çalışır</h3>
+            <p>Yatağa girdiğinizde unutun. Bant, sizin müdahaleniz olmadan sessizce görevini sürdürür.</p>
+          </article>
+          <article class="card neu reveal">
+            <div class="card-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <h3>Doğru anı bekler</h3>
+            <p>Her dakika aynı şeyi yapmaz. Rüya görmeye en yakın olduğunuz anı bekler ve yalnızca o anda nazikçe devreye girer.</p>
+          </article>
+          <article class="card neu reveal">
+            <div class="card-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 19V5M4 19h16M8 15l3-4 3 2 4-6"/></svg>
+            </div>
+            <h3>Sabah özet verir</h3>
+            <p>Telefonunuzda karmaşık grafikler değil; gecenin nasıl geçtiğine dair sade ve anlaşılır bir özet bulursunuz.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="nasil">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow">Nasıl çalışır?</span>
+          <h2>Beş adım, üstü kapalı</h2>
+          <p class="lead">Yöntemin iç detayları paylaşılmıyor. Sadece hissettiğiniz deneyim.</p>
+        </div>
+        <div class="steps">
+          <article class="step neu reveal">
+            <h3>Siz seçersiniz</h3>
+            <p>Yatmadan önce o gece rüyanızda ne görmek istediğinizi uygulamada belirlersiniz.</p>
+          </article>
+          <article class="step neu reveal">
+            <h3>Algılar</h3>
+            <p>Bant ve isteğe bağlı saat, uykunuzun ritmini sessizce takip eder — sizi uyandırmadan.</p>
+          </article>
+          <article class="step neu reveal">
+            <h3>Anlar</h3>
+            <p>Cihaz, gecenin hangi evresinde olduğunuzu ve rüya anının geldiğini kendi başına ayırt eder.</p>
+          </article>
+          <article class="step neu reveal">
+            <h3>Rüyaya yönlendirir</h3>
+            <p>O an geldiğinde uykuyu bölmeyen, çok hafif bir işaretle seçtiğiniz sahneye doğru nazikçe yönlendirir.</p>
+          </article>
+          <article class="step neu reveal">
+            <h3>Sabah özetler</h3>
+            <p>Gece nasıl geçti; tek ekranda, sade bir rapor halinde sizi bekler.</p>
+          </article>
+        </div>
+        <p class="patent-note neu-inset reveal">
+          Yöntemin teknik ayrıntıları patent süreci nedeniyle paylaşılmamaktadır.
+          Bu sayfa yalnızca deneyimi anlatır.
+        </p>
+      </div>
+    </section>
+
+    <section id="malzemeler">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow">Kutuda ne var?</span>
+          <h2>Malzeme ve maliyet payı</h2>
+          <p class="lead">Fiyatlar bu bileşenlere, montaja ve yazılım hizmetine dayanır. Tutarlar yaklaşık ve bilgilendirme amaçlıdır.</p>
+        </div>
+        <div class="materials">
+          <div class="material reveal">
+            <div>
+              <h3>Baş bandı ve kumaş gövde</h3>
+              <p>Yıkanabilir, yumuşak baş bandı ve koruyucu kılıf</p>
+            </div>
+            <span class="cost">~1.200 ₺</span>
+          </div>
+          <div class="material reveal">
+            <div>
+              <h3>Biyo-sinyal okuma modülü</h3>
+              <p>Gece boyunca vücut ritmini okuyan ana algılayıcı birim</p>
+            </div>
+            <span class="cost">~2.400 ₺</span>
+          </div>
+          <div class="material reveal">
+            <div>
+              <h3>İşlemci kartı</h3>
+              <p>Veriyi yerinde değerlendiren kompakt kontrol kartı</p>
+            </div>
+            <span class="cost">~1.100 ₺</span>
+          </div>
+          <div class="material reveal">
+            <div>
+              <h3>Hafif uyarım birimi</h3>
+              <p>Uykuyu bölmeyen, çok düşük seviyeli işaret üretici</p>
+            </div>
+            <span class="cost">~900 ₺</span>
+          </div>
+          <div class="material reveal">
+            <div>
+              <h3>Batarya ve kablosuz şarj</h3>
+              <p>Şarjlı batarya + gece standı / şarj altlığı</p>
+            </div>
+            <span class="cost">~850 ₺</span>
+          </div>
+          <div class="material reveal">
+            <div>
+              <h3>Saat / telefon bağlantısı</h3>
+              <p>Akıllı saat ve mobil uygulama köprüsü</p>
+            </div>
+            <span class="cost">~450 ₺</span>
+          </div>
+          <div class="material reveal">
+            <div>
+              <h3>Montaj, kalibrasyon, test</h3>
+              <p>El işçiliği, kalite kontrol ve bireysel ayar</p>
+            </div>
+            <span class="cost">~1.300 ₺</span>
+          </div>
+          <div class="material reveal">
+            <div>
+              <h3>Uygulama ve bulut hizmeti</h3>
+              <p>Mobil yazılım, hesap ve gece geçmişi altyapısı (yıllık pay)</p>
+            </div>
+            <span class="cost">~700 ₺</span>
+          </div>
+        </div>
+        <div class="materials-total neu reveal">
+          <span>Yaklaşık malzeme + üretim payı (birim başına)</span>
+          <strong>~8.900 ₺</strong>
+        </div>
+      </div>
+    </section>
+
+    <section id="fiyatlar">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow">Fiyatlar</span>
+          <h2>Size uygun paket</h2>
+          <p class="lead">Başlangıç fiyatları tahmini ve bilgilendirme amaçlıdır. Güncel teklif için iletişime geçin.</p>
+        </div>
+        <div class="pricing">
+          <article class="price-card neu reveal">
+            <h3>Başlangıç</h3>
+            <p class="price">8.900 ₺ <small>/ cihaz</small></p>
+            <p class="price-note">Malzeme payına yakın giriş paketi</p>
+            <ul class="features">
+              <li>unity-X baş bandı</li>
+              <li>Mobil uygulama erişimi</li>
+              <li>Sabah özet ekranı</li>
+              <li>Temel kalibrasyon</li>
+            </ul>
+            <p class="breakdown neu-inset">Malzeme payı + temel üretim + uygulama</p>
+            <a class="btn" href="#iletisim">Bilgi al</a>
+          </article>
+
+          <article class="price-card neu featured reveal">
+            <span class="badge">Önerilen</span>
+            <h3>Standart</h3>
+            <p class="price">13.900 ₺ <small>/ cihaz</small></p>
+            <p class="price-note">En dengeli deneyim</p>
+            <ul class="features">
+              <li>Başlangıç paketinin tamamı</li>
+              <li>Akıllı saat entegrasyonu</li>
+              <li>Bulut gece geçmişi</li>
+              <li>Çoklu telefon senkronu</li>
+              <li>Öncelikli kurulum desteği</li>
+            </ul>
+            <p class="breakdown neu-inset">Malzeme + üretim + saat köprüsü + bulut</p>
+            <a class="btn btn-accent" href="#iletisim">Bu paketi seç</a>
+          </article>
+
+          <article class="price-card neu reveal">
+            <h3>Klinik / Kurumsal</h3>
+            <p class="price">Talep üzerine</p>
+            <p class="price-note">Çoklu kullanıcı ve yönetici paneli</p>
+            <ul class="features">
+              <li>Standart özelliklerin tamamı</li>
+              <li>Çoklu kullanıcı yönetimi</li>
+              <li>Personel / yönetici paneli</li>
+              <li>Özel eğitim ve destek</li>
+              <li>Kurumsal faturalama</li>
+            </ul>
+            <p class="breakdown neu-inset">Donanım + yazılım lisansı + destek SLA</p>
+            <a class="btn" href="#iletisim">Teklif iste</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="sss">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow">SSS</span>
+          <h2>Sık sorulan sorular</h2>
+        </div>
+        <div class="faq">
+          <details class="neu reveal">
+            <summary>Gerçekten istediğim rüyayı görebilir miyim?</summary>
+            <div class="answer">Amaç budur: yatmadan önce seçtiğiniz sahneye doğru, doğru anda nazikçe yönlendirilirsiniz. Rüya kişisel bir deneyim olduğu için sonuç geceden geceye değişebilir; düzenli kullanımda etki belirginleşir.</div>
+          </details>
+          <details class="neu reveal">
+            <summary>Güvenli mi?</summary>
+            <div class="answer">Cihaz, uykuyu bölmeyen çok hafif işaretlerle çalışacak şekilde tasarlanmıştır. Yine de tıbbi bir cihaz değildir; sağlık sorununuz varsa bir uzmana danışın.</div>
+          </details>
+          <details class="neu reveal">
+            <summary>Tıbbi teşhis veya tedavi için kullanılabilir mi?</summary>
+            <div class="answer">Hayır. unity-X tıbbi teşhis, tedavi veya klinik karar desteği amacıyla sunulmaz. Günlük uyku deneyimini destekleyen bir tüketici ürünüdür.</div>
+          </details>
+          <details class="neu reveal">
+            <summary>Hangi telefonlarla çalışır?</summary>
+            <div class="answer">Android telefonlar desteklenir. Akıllı saat bağlantısı için Wear OS uyumlu bir saat önerilir. Kurumsal masaüstü paneli ayrıca sunulur.</div>
+          </details>
+          <details class="neu reveal">
+            <summary>Verilerim nerede duruyor?</summary>
+            <div class="answer">Hesabınıza bağlı gece özeti, güvenli bulut hesabınızda tutulur. Yalnızca sizin cihazlarınız erişebilir; veriler üçüncü taraflarla paylaşılmaz.</div>
+          </details>
+          <details class="neu reveal">
+            <summary>Fiyatlar kesin mi?</summary>
+            <div class="answer">Hayır. Bu sayfadaki tutarlar malzeme ve üretim payına dayanan tahmini başlangıç fiyatlarıdır. Güncel teklif sipariş döneminde netleşir.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="iletisim">
+    <div class="wrap">
+      <div class="footer-box neu reveal">
+        <h2>unity-X</h2>
+        <p><strong class="hl">Rüyanızda istediğiniz şeyi görmenizi sağlar.</strong></p>
+        <p>Detaylı bilgi ve sipariş için iletişime geçin.</p>
+        <p><strong>hello@unity-x.app</strong></p>
+        <p class="legal">
+          Tıbbi teşhis ya da tedavi amaçlı bir cihaz değildir.
+          Fiyatlar bilgilendirme amaçlıdır ve değişiklik gösterebilir.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var stored = localStorage.getItem("nn-theme");
+      if (stored === "dark" || stored === "light") {
+        root.setAttribute("data-theme", stored);
+      }
+
+      var toggle = document.getElementById("themeToggle");
+      if (toggle) {
+        toggle.addEventListener("click", function () {
+          var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+          if (next === "light") root.removeAttribute("data-theme");
+          else root.setAttribute("data-theme", "dark");
+          localStorage.setItem("nn-theme", next);
+        });
+      }
+
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        var nodes = document.querySelectorAll(".reveal");
+        if ("IntersectionObserver" in window) {
+          var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+              if (e.isIntersecting) {
+                e.target.classList.add("visible");
+                io.unobserve(e.target);
+              }
+            });
+          }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+          nodes.forEach(function (n) { io.observe(n); });
+        } else {
+          nodes.forEach(function (n) { n.classList.add("visible"); });
+        }
+      } else {
+        document.querySelectorAll(".reveal").forEach(function (n) {
+          n.classList.add("visible");
+        });
+      }
+    })();
+  </script>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module">
+    import * as THREE from "three";
+    import { STLLoader } from "three/addons/loaders/STLLoader.js";
+    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+    const canvas = document.getElementById("bandViewer");
+    if (!canvas) throw new Error("bandViewer missing");
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 2000);
+    camera.position.set(0, 90, 280);
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true,
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+    const soft = new THREE.MeshStandardMaterial({
+      color: 0x6c7ae0,
+      roughness: 0.55,
+      metalness: 0.18,
+    });
+    const dark = new THREE.MeshStandardMaterial({
+      color: 0x3a4150,
+      roughness: 0.4,
+      metalness: 0.35,
+    });
+    const glow = new THREE.MeshStandardMaterial({
+      color: 0xa8b2ff,
+      emissive: 0x6c7ae0,
+      emissiveIntensity: 0.55,
+      roughness: 0.35,
+      metalness: 0.2,
+    });
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+    const key = new THREE.DirectionalLight(0xffffff, 1.05);
+    key.position.set(120, 180, 140);
+    scene.add(key);
+    const fill = new THREE.DirectionalLight(0xb8c0ff, 0.45);
+    fill.position.set(-140, 40, -80);
+    scene.add(fill);
+
+    const root = new THREE.Group();
+    scene.add(root);
+
+    function proceduralBand() {
+      const g = new THREE.Group();
+      const band = new THREE.Mesh(
+        new THREE.TorusGeometry(95, 9.5, 18, 72, Math.PI * 1.22),
+        soft
+      );
+      band.rotation.x = Math.PI / 2;
+      band.rotation.z = -Math.PI * 0.11;
+      band.position.y = 8;
+      g.add(band);
+
+      const pod = new THREE.Mesh(new THREE.SphereGeometry(1, 28, 18), soft);
+      pod.scale.set(28, 12, 14);
+      pod.position.set(0, 10, 95);
+      g.add(pod);
+
+      const plate = new THREE.Mesh(new THREE.BoxGeometry(22, 3, 10), dark);
+      plate.position.set(0, 10, 108);
+      g.add(plate);
+
+      const led = new THREE.Mesh(new THREE.SphereGeometry(3.2, 16, 12), glow);
+      led.position.set(0, 14, 109);
+      g.add(led);
+
+      for (const side of [-1, 1]) {
+        const ang = (side * 55 * Math.PI) / 180;
+        const pad = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 12), soft);
+        pad.scale.set(10, 5, 8);
+        pad.position.set(95 * Math.cos(ang), 6, 95 * Math.sin(ang));
+        g.add(pad);
+      }
+
+      const clasp = new THREE.Mesh(new THREE.SphereGeometry(1, 22, 14), dark);
+      clasp.scale.set(18, 10, 12);
+      clasp.position.set(0, 6, -92);
+      g.add(clasp);
+      return g;
+    }
+
+    function fitCamera(object) {
+      const box = new THREE.Box3().setFromObject(object);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+      object.position.sub(center);
+      const maxDim = Math.max(size.x, size.y, size.z);
+      camera.position.set(maxDim * 0.55, maxDim * 0.35, maxDim * 1.35);
+      camera.near = maxDim / 200;
+      camera.far = maxDim * 20;
+      camera.updateProjectionMatrix();
+      controls.target.set(0, 0, 0);
+      controls.update();
+    }
+
+    const controls = new OrbitControls(camera, canvas);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.enablePan = false;
+    controls.minDistance = 120;
+    controls.maxDistance = 520;
+    controls.autoRotate = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    controls.autoRotateSpeed = 1.1;
+
+    function mount(object) {
+      while (root.children.length) root.remove(root.children[0]);
+      root.add(object);
+      fitCamera(object);
+    }
+
+    const loader = new STLLoader();
+    loader.load(
+      "models/nexus-neuro-band.stl",
+      (geometry) => {
+        geometry.computeVertexNormals();
+        const mesh = new THREE.Mesh(geometry, soft);
+        mount(mesh);
+      },
+      undefined,
+      () => {
+        mount(proceduralBand());
+      }
+    );
+
+    function resize() {
+      const wrap = canvas.parentElement;
+      const w = wrap.clientWidth || 320;
+      const h = wrap.clientHeight || 320;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h, false);
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    // Theme-aware accent refresh
+    const themeObserver = new MutationObserver(() => {
+      const darkMode = document.documentElement.getAttribute("data-theme") === "dark";
+      soft.color.set(darkMode ? 0x8b97f0 : 0x6c7ae0);
+      glow.emissive.set(darkMode ? 0x8b97f0 : 0x6c7ae0);
+    });
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
+    function tick() {
+      controls.update();
+      renderer.render(scene, camera);
+      requestAnimationFrame(tick);
+    }
+    tick();
+  </script>
+</body>
+</html>

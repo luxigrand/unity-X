@@ -1,0 +1,31 @@
+Nexus Neuro — Fusion 360
+========================
+
+Asistan şart değil. Tasarımı CadQuery ile ürettim; sen Fusion'da açıyorsun.
+
+1) AÇ
+   File > Open
+   → web/models/nexus_band/NexusNeuro_Headband.step
+   Units: Millimeter
+
+2) PARÇALAR
+   01_BandSpine         C-omurga
+   02_SensorPod_Base    alın kutusu (içi boş, boss, elektrot delikleri)
+   03_SensorPod_Lid     kapak + LED
+   04/05_TemplePad      şakak yastıkları
+   06_RearClasp_Base    batarya + USB-C + kayış
+   07_RearClasp_Lid     arka kapak
+
+3) BASKI
+   Ayrı STL'ler: web/models/nexus_band/*.stl
+   Pod / clasp → PETG | pad → TPU | spine → TPU veya kumaş+sert insert
+
+4) YENİDEN ÜRET
+   python web/models/design_nexus_band.py
+   Parametreler dosyanın başında (mm).
+
+5) İsteğe bağlı Assistant (ince ayar)
+   Select body 02_SensorPod_Base. Add 1 mm fillets on outer sharp edges.
+   Propose steps first and wait for confirmation.
+
+Detay: web/models/nexus_band/OKU.txt
