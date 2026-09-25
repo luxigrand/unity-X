@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#e6e9ef"/>
+  <rect x="72" y="72" width="1056" height="486" rx="36" fill="#e6e9ef" stroke="#c5c9d0" stroke-width="2"/>
+  <circle cx="180" cy="210" r="44" fill="#e6e9ef" stroke="#6c7ae0" stroke-width="3"/>
+  <path d="M180 180c-12 16.5-27 26-27 47a27 27 0 0 0 54 0c0-21-15-30.5-27-47z" fill="none" stroke="#6c7ae0" stroke-width="3" stroke-linecap="round"/>
+  <text x="250" y="200" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="28" font-weight="700" fill="#6c7ae0" letter-spacing="3">CORTEX NEURO</text>
+  <text x="250" y="268" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="64" font-weight="800" fill="#3a4150">unity-X</text>
+  <text x="72" y="430" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="36" font-weight="600" fill="#3a4150">R�yan1zda istediiniz _eyi g�rmenizi salar.</text>
+  <text x="72" y="490" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="24" fill="#6b7385">cortex-neuro.net</text>
+</svg>
